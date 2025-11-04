@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MYHOST=$( hostname )
+MYHOST=$( hostname -s )
 DST_DIR="/tmp/check_mirror/${MYHOST}"
 
 # //check_iso валидирует доступность ресурсов и генерирует отчет в check_mirror

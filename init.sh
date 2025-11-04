@@ -1,4 +1,8 @@
 #!/bin/sh
+
+MYHOST=$( hostname )
+DST_DIR="/tmp/check_mirror/${MYHOST}"
+
 # //check_iso валидирует доступность ресурсов и генерирует отчет в check_mirror
 #SOURCE="cloud"
 SOURCE="iso"
@@ -129,9 +133,11 @@ check_mirror()
 
 	notes=
 	if [ ${iso_mirrors_count} -lt 2 ]; then
-		notes="mirrors too small"
+		_normal=$(( 10 - iso_mirrors_count ))
+		notes="mirrors too small: add ${_normal}"
 	elif [ ${iso_mirrors_count} -gt 10 ]; then
-		notes="mirrors too lot"
+		_normal=$(( iso_mirrors_count - 10 ))
+		notes="mirrors too lot: ${iso_mirrors_count}: remove ${_normal} "
 	fi
 
 	for i in ${iso_site}; do
@@ -163,13 +169,13 @@ check_mirror()
 		echo
 
 		if [ ${res_ok} -ne 1 ]; then
-			[ ! -d /tmp/check_mirror/${_profile_name} ] && mkdir -p /tmp/check_mirror/${_profile_name}
-			echo "${i}" >> /tmp/check_mirror/${_profile_name}/bad.txt
+			[ ! -d ${DST_DIR}/${_profile_name} ] && mkdir -p ${DST_DIR}/${_profile_name}
+			echo "${i}" >> ${DST_DIR}/${_profile_name}/bad.txt
 		fi
 	done
 
 	if [ -n "${notes}" ]; then
-		echo "${_profile_name}: ${notes}" > /tmp/check_mirror/${_profile_name}.notes
+		echo "${_profile_name}: ${notes}" > ${DST_DIR}/${_profile_name}.notes
 	fi
 }
 
@@ -238,8 +244,8 @@ truncate -s0 ${TMP_CBSD_CHECKISO_CONF}
 
 xfull_list_cnt=0
 
-[ -d /tmp/check_mirror ] && rm -rf /tmp/check_mirror
-mkdir /tmp/check_mirror
+[ -d ${DST_DIR} ] && rm -rf ${DST_DIR}
+mkdir -p ${DST_DIR}
 
 for i in ${full_list}; do
 	if ! gen_checkiso_conf "${i}"; then

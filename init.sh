@@ -55,6 +55,7 @@ gen_checkiso_conf()
 	iso_site=
 	cbsd_iso_mirrors=
 	iso_img=
+	iso_img_dist=
 	register_iso_name=
 	register_iso_as=
 
@@ -79,6 +80,10 @@ gen_checkiso_conf()
 
 	echo "ISO mirrors count: ${iso_mirrors_count}"
 	echo "CBSD mirrors count: ${cbsd_mirrors_count}"
+
+	if [ -n "${iso_img_dist}" ]; then
+		iso_img="${iso_img_dist}"
+	fi
 	echo "${iso_img}"
 	echo "${register_iso_name}"
 
@@ -101,6 +106,7 @@ check_mirror()
 	iso_site=
 	cbsd_iso_mirrors=
 	iso_img=
+	iso_img_dist=
 	register_iso_name=
 	register_iso_as=
 
@@ -141,7 +147,11 @@ check_mirror()
 	fi
 
 	for i in ${iso_site}; do
-		_src_file="${i}${iso_img}"
+		if [ -n "${iso_img_dist}" ]; then
+			_src_file="${i}${iso_img_dist}"
+		else
+			_src_file="${i}${iso_img}"
+		fi
 		printf "  * Check: ${_src_file}"
 		res_ok=1
 		headers=$( curl -s -I "${_src_file}" )
@@ -234,6 +244,7 @@ echo "FULL: ${full_list}"
 for i in ${full_list}; do
 	echo "check_mirror \"${i}\""
 	check_mirror "${i}"
+exit 0
 done
 
 exit 0

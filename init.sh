@@ -228,7 +228,6 @@ echo "FULL: ${full_list}"
 for i in ${full_list}; do
 	echo "check_mirror \"${i}\""
 	check_mirror "${i}"
-	exit 0
 done
 
 exit 0

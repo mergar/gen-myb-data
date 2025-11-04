@@ -180,7 +180,7 @@ check_mirror()
 
 		if [ ${res_ok} -ne 1 ]; then
 			[ ! -d ${DST_DIR}/${_profile_name} ] && mkdir -p ${DST_DIR}/${_profile_name}
-			echo "${i}" >> ${DST_DIR}/${_profile_name}/bad.txt
+			echo "${_src_file}" >> ${DST_DIR}/${_profile_name}/bad.txt
 		fi
 	done
 

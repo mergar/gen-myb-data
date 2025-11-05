@@ -158,9 +158,9 @@ check_mirror()
 		fi
 		printf "  * Check: ${_src_file}"
 		res_ok=1
-		headers=$( curl -s -I "${_src_file}" )
-		status=$(echo "${headers}" | grep -i '^HTTP/' | awk '{print $2}')
-		content_length=$( echo "${headers}" | grep -i '^Content-Length' | awk '{print $2}' | tr -d ';\r\n' )
+		headers=$( curl -s -I --follow "${_src_file}" )
+		status=$(echo "${headers}" | grep -i '^HTTP/' | tail -n1 | awk '{print $2}')
+		content_length=$( echo "${headers}" | grep -i '^Content-Length' | tail -n1 | awk '{print $2}' | tr -d ';\r\n' )
 
 		if [ "${status}" -eq 200 ]; then
 			printf ", [file exist] "

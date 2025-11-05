@@ -162,7 +162,7 @@ check_mirror()
 		fi
 		printf "  * Check: ${_src_file}"
 		res_ok=1
-		headers=$( curl -s -I --follow "${_src_file}" )
+		headers=$( curl --connect-timeout 20 -s -I --follow "${_src_file}" )
 		status=$(echo "${headers}" | grep -i '^HTTP/' | tail -n1 | awk '{print $2}')
 		content_length=$( echo "${headers}" | grep -i '^Content-Length' | tail -n1 | awk '{print $2}' | tr -d ';\r\n' )
 

@@ -91,7 +91,12 @@ for profile in ${_work_dir}; do
 
 	bad_list=$( show_match -a "${host0_bad}" -b "${host1_bad}" )
 
-	echo "${bad_list}" > "${DST_DIR}/${profile}.bad"
+	[ -z "${bad_list}" ] && continue
+
+	truncate -s0 "${DST_DIR}/${profile}.bad"
+	for i in ${bad_list}; do
+		echo "${i}" >> "${DST_DIR}/${profile}.bad"
+	done
 done
 
 exit 0

@@ -23,6 +23,10 @@ oyos \
 windows10_ru \
 "
 
+SKIP_PROFILES="
+vm-freebsd-helloSystem-x64.conf \
+"
+
 TMP_CBSD_CHECKISO_CONF="/root/myb-build/myb-extras/bin/cbsd_checkiso.conf"
 TMP_CBSD_API_CLOUD_IMAGES_JSON="/root/myb-build/myb-extras/cbsd_api_cloud_images.json"
 TMP_CBSD_BHYVE_API_CONF="/root/myb-build/myb-extras/bin/bhyve-api.conf"
@@ -188,6 +192,12 @@ check_mirror()
 		echo "${_profile_name}: ${notes}" > ${DST_DIR}/${_profile_name}.notes
 	fi
 }
+
+# support for override by arg, e.g:
+# ./init.sh /usr/local/cbsd/etc/defaults/vm-freebsd-FreeBSD-aarch64-14.3.conf
+if [ -n "${1}" ]; then
+	echo "full_list=\"$*\"" > /tmp/iso-images.conf
+fi
 
 
 ## MAIN

@@ -3,6 +3,8 @@
 MYHOST=$( hostname -s )
 DST_DIR="/tmp/check_mirror/${MYHOST}"
 
+[ -d "${DST_DIR}" ] && rm -rf "${DST_DIR}"
+[ -r /tmp/iso-images.conf ] && rm -f /tmp/iso-images.conf
 [ ! -d "${DST_DIR}" ] && mkdir -p ${DST_DIR}
 
 # //check_iso валидирует доступность ресурсов и генерирует отчет в check_mirror

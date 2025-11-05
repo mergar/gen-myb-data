@@ -66,6 +66,7 @@ gen_checkiso_conf()
 	iso_img_dist=
 	register_iso_name=
 	register_iso_as=
+	sha256sum=0
 
 	. ${conf}
 
@@ -117,6 +118,7 @@ check_mirror()
 	iso_img_dist=
 	register_iso_name=
 	register_iso_as=
+	sha256sum=0
 
 	if [ ! -r "${conf}" ]; then
 		echo "not found: ${conf}"
@@ -168,15 +170,19 @@ check_mirror()
 
 		if [ "${status}" -eq 200 ]; then
 			printf ", [file exist] "
-			if [ -n "${content_length}" ]; then
-				printf ", size: [${content_length}] bytes"
-				if [ "${content_length}" != "${iso_img_dist_size}" ]; then
-					printf ", size wrong"
+			if [ "${sha256sum}" != "0" ]; then
+				if [ -n "${content_length}" ]; then
+					printf ", size: [${content_length}] bytes"
+					if [ "${content_length}" != "${iso_img_dist_size}" ]; then
+						printf ", size wrong"
+						res_ok=0
+					fi
+				else
 					res_ok=0
+					printf ", size unknown"
 				fi
 			else
-				res_ok=0
-				printf ", size unknown"
+				printf ", sha256sum=0, skip check size"
 			fi
 		else
 			res_ok=0

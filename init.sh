@@ -1,5 +1,4 @@
 #!/bin/sh
-
 MYHOST=$( hostname -s )
 DST_DIR="/tmp/check_mirror/${MYHOST}"
 
@@ -8,8 +7,8 @@ DST_DIR="/tmp/check_mirror/${MYHOST}"
 [ ! -d "${DST_DIR}" ] && mkdir -p ${DST_DIR}
 
 # //check_iso валидирует доступность ресурсов и генерирует отчет в check_mirror
-#SOURCE="cloud"
-SOURCE="iso"
+SOURCE="cloud"
+#SOURCE="iso"
 
 SKIP_CLOUD=" \
 alpine3 \

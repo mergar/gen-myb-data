@@ -1,6 +1,13 @@
 #!/bin/sh
+<<<<<<< HEAD
+# variable used in profies, init it
+freebsdhostversion="1500068"
+
+=======
+>>>>>>> bd18f04140d8a74a3c49289bf844607b701a2625
 MYHOST=$( hostname -s )
 DST_DIR="/tmp/check_mirror/${MYHOST}"
+ARCH_LIST="riscv64 x86 aarch64 x86_64 x64"
 
 [ -d "${DST_DIR}" ] && rm -rf "${DST_DIR}"
 [ -r /tmp/iso-images.conf ] && rm -f /tmp/iso-images.conf
@@ -42,6 +49,37 @@ for i in ${DYN_FILES}; do
 done
 
 #exit 0
+
+show_match()
+{
+	local a= b=
+	local _list= _match=0
+
+	while getopts "a:b:" opt; do
+		case "${opt}" in
+			a) a="${OPTARG}" ;;
+			b) b="${OPTARG}" ;;
+		esac
+		shift $(($OPTIND - 1))
+	done
+
+	for i in ${a}; do
+		_match=0
+		for j in ${b}; do
+			if [ "${i}" = "${j}" ]; then
+				if [ -z "${_list}" ]; then
+					_list="${i}"
+				else
+					_list="${_list} ${i}"
+				fi
+				break
+			fi
+		done
+	done
+
+	echo "${_list}"
+}
+
 
 gen_checkiso_conf()
 {
@@ -107,8 +145,8 @@ check_mirror()
 	local conf="${1}" i=
 	echo "* ${conf}"
 
-	local _profile_name=$( basename ${conf} )
-
+	# basename
+	local _profile_name="${conf##*/}"
 
 	fetch=
 	iso_site=
@@ -202,6 +240,75 @@ check_mirror()
 	fi
 }
 
+
+check_style()
+{
+	local conf="${1}" i=
+	local _name_arch=0
+	echo "* ${conf}"
+
+	# basename
+	local _profile_name="${conf##*/}"
+
+	fetch=
+	iso_site=
+	iso_img=
+	iso_img_dist=
+	register_iso_name=
+	register_iso_as=
+
+	if [ ! -r "${conf}" ]; then
+		echo "not found: ${conf}"
+		return 1
+	fi
+
+	. ${conf}
+
+	_name_arch=0
+	echo "${conf}" | grep -q "x86_64.conf"
+	[ ${?} -eq 0 ] && return
+
+	echo "${conf}" | grep -q "aarch64"
+	[ ${?} -eq 0 ] && return
+
+	echo "${conf}" | grep -q "riscv64"
+	[ ${?} -eq 0 ] && return
+
+	for i in ${ARCH_LIST}; do
+		echo "${conf}" | grep -q ${i}
+		_ret=$?
+		[ ${_ret} -eq 0 ] && _name_arch=1 && break
+	done
+
+	[ ${_name_arch} -ne 1 ] && return 0
+
+	if [ -z "${_res}" ]; then
+		echo "!!!"
+		echo "No arch in profile filename: ${_profile_name}"
+		_valid_arch=$( echo ${ARCH_LIST} | tr -d '-' )
+		printf "valid arch, choice: ${_valid_arch} (default: x86_64):"
+		#read _res
+		echo
+		[ -z "${_res}" ] && _res="x86_64"
+		#_new_profile_name=$( echo "${_profile_name}" | sed "s:.conf:-${_res}.conf:g" )
+		_new_profile_name=$( echo "${_profile_name}" | sed "s:-x86::g" | sed "s:-x64::g" | sed "s:.conf:-${_res}.conf:g" )
+		echo "${_profile_name} -> ${_new_profile_name} ?"
+		_prefix="vm-${vm_os_type}-"
+		_new_profile=$( echo "${_new_profile_name}" | sed "s:${_prefix}::g" | sed "s:.conf::g" )
+		echo "NEW PROF: ${_new_profile}"
+		read p
+		mv /usr/local/cbsd/etc/defaults/${_profile_name} /usr/local/cbsd/etc/defaults/${_new_profile_name}
+		echo "etc/defaults/${_profile_name}" >> /usr/local/cbsd/ObsoleteFiles
+		sysrc -qf /usr/local/cbsd/etc/defaults/${_new_profile_name} vm_profile="${_new_profile}"
+	fi
+
+	if [ "${fetch}" != "1" ]; then
+		echo "fetch disabled: ${conf}"
+		return 1
+	fi
+}
+
+
 # support for override by arg, e.g:
 # ./init.sh /usr/local/cbsd/etc/defaults/vm-freebsd-FreeBSD-aarch64-14.3.conf
 if [ -n "${1}" ]; then
@@ -260,9 +367,23 @@ fi
 
 echo "FULL: ${full_list}"
 # ISO ONLY
+#for i in ${full_list}; do
+#	echo "check_mirror \"${i}\""
+#	check_mirror "${i}"
+#done
+
+
 for i in ${full_list}; do
-	echo "check_mirror \"${i}\""
-	check_mirror "${i}"
+
+	# cloud
+	eval conf="\$image_${i}"
+
+	echo "check_style \"${conf}\""
+	check_style "${conf}"
+
+# ISO
+#	echo "check_style \"${i}\""
+#	check_style "${i}"
 done
 
 exit 0

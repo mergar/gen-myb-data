@@ -1,10 +1,5 @@
 #!/bin/sh
-<<<<<<< HEAD
-# variable used in profies, init it
 freebsdhostversion="1500068"
-
-=======
->>>>>>> bd18f04140d8a74a3c49289bf844607b701a2625
 MYHOST=$( hostname -s )
 DST_DIR="/tmp/check_mirror/${MYHOST}"
 ARCH_LIST="riscv64 x86 aarch64 x86_64 x64"
@@ -94,7 +89,7 @@ gen_checkiso_conf()
 		return 1
 	fi
 
-	echo ${conf}
+	echo "${conf}"
 
 	fetch=
 	iso_site=
@@ -240,7 +235,7 @@ check_mirror()
 	fi
 }
 
-
+# myb, register..
 check_style()
 {
 	local conf="${1}" i=
@@ -263,6 +258,35 @@ check_style()
 	fi
 
 	. ${conf}
+
+#        local jname="${1}"
+#        
+#        conf=
+#        eval conf="\$image_${jname}"
+#        
+#        echo "* ${conf}"
+#        
+#        if [ ! -r "${conf}" ]; then
+#                echo "not found: ${conf}"
+#                return 1
+#        fi
+#        . ${conf}
+#        
+#        local _profile_name=$( basename ${conf} )
+
+	[ ! -d "${DST_DIR}/tmp/myb" ] && mkdir -p "${DST_DIR}/tmp/myb"
+	myb_name=
+
+	if [ -z "${myb_image}" ]; then
+		echo "no myb_image: ${_profile_name}" >> "${DST_DIR}/${_profile_name}.notes"
+	elif [ -r "${DST_DIR}/tmp/myb/${myb_image}" ]; then
+		echo "dub myb_image: ${_profile_name}:" >> "${DST_DIR}/${_profile_name}.notes"
+		cat "${DST_DIR}/tmp/myb/${myb_image}" >> "${DST_DIR}/${_profile_name}.notes"
+	else
+		echo "${_profile_name}" > "${DST_DIR}/tmp/myb/${myb_image}"
+	fi
+
+	return 0
 
 	_name_arch=0
 	echo "${conf}" | grep -q "x86_64.conf"

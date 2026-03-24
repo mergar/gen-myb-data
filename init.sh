@@ -14,6 +14,7 @@ SOURCE="cloud"
 
 SKIP_CLOUD=" \
 alpine3 \
+astra \
 dynfi4_ufs \
 freefire14_ufs \
 oyos \
@@ -397,20 +398,18 @@ echo "FULL: ${full_list}"
 #done
 
 
-for i in ${full_list}; do
-
-	# cloud
-	eval conf="\$image_${i}"
-
-	echo "check_style \"${conf}\""
-	check_style "${conf}"
+#for i in ${full_list}; do
+#
+#	# cloud
+#	eval conf="\$image_${i}"
+#
+#	echo "check_style \"${conf}\""
+#	check_style "${conf}"
 
 # ISO
 #	echo "check_style \"${i}\""
 #	check_style "${i}"
-done
-
-exit 0
+#done
 
 xfull_list=
 
